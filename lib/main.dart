@@ -71,9 +71,9 @@ class _MyHomePageState extends State<MyHomePage> {
               nextData: () {
                 BlocProvider.of<PhotosBloc>(context).add(LoadPhotosEvent());
               },
-              loadingWidget: SpinKitPumpingHeart(
-                color: Colors.deepPurple,
-              ),
+              loadingWidget: SpinKitRipple(
+                  duration: Duration(milliseconds: 500),
+                  color: Colors.deepPurple),
             ),
           );
         }
