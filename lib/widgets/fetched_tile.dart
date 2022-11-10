@@ -1,8 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:bloc_playground/bloc/photos_bloc.dart';
-import 'package:bloc_playground/bloc/photos_event.dart';
-import 'package:bloc_playground/bloc/photos_state.dart';
+import 'package:bloc_playground/bloc/photos_bloc/photos_bloc.dart';
+import 'package:bloc_playground/bloc/photos_bloc/photos_event.dart';
+import 'package:bloc_playground/bloc/photos_bloc/photos_state.dart';
 import 'package:bloc_playground/models/photos_response.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
