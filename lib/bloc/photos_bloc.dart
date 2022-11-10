@@ -13,19 +13,28 @@ import 'package:meta/meta.dart';
 ////////////////////////////
 
 class PhotosBloc extends Bloc<PhotosEvent, PhotosState> {
-  final PhotosFetching _photosFetching;
-
-  PhotosBloc(this._photosFetching) : super(PhotosLoadingState()) {
-    on<LoadPhotosEvent>((event, emit) async {
-      if (event is PhotosEvent) {
-        emit(PhotosLoadingState());
-        try {
-          final photos = await _photosFetching.getPhotos();
-          emit(PhotosLoadedState(photos));
-        } catch (e) {
-          emit(PhotosErrorState(e.toString()));
-        }
+  PhotosBloc() : super(PhotosLoadingState()) {
+    on<LoadPhotosEvent>(getPhotos);
+  }
+  Future<void> getPhotos(
+      LoadPhotosEvent event, Emitter<PhotosState> emit) async {
+    List<PhotosResponse> photos = [];
+    //emit(PhotosLoadingState());
+    try {
+      if (state is PhotosLoadedState) {
+        photos = [...(state as PhotosLoadedState).photos];
       }
-    });
+      bool hasNext = true;
+      var photosResponse = await PhotosFetching.fetchPhotos(photos.length);
+      if (photosResponse.length < 10) {
+        hasNext = false;
+      }
+      photos.addAll(photosResponse);
+      emit(
+        PhotosLoadedState(photos, hasNext),
+      );
+    } catch (err) {
+      emit(PhotosErrorState(err.toString()));
+    }
   }
 }

@@ -14,9 +14,10 @@ class PhotosLoadingState extends PhotosState {
 }
 
 class PhotosLoadedState extends PhotosState {
-  final List<PhotosResponse> photos;
+  List<PhotosResponse> photos = [];
+  final bool hasNext;
 
-  PhotosLoadedState(this.photos);
+  PhotosLoadedState(this.photos, this.hasNext);
 
   @override
   List<Object?> get props => [photos];
