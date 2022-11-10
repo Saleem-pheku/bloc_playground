@@ -1,5 +1,5 @@
-import 'package:bloc_playground/bloc/photos_event.dart';
-import 'package:bloc_playground/bloc/photos_state.dart';
+import 'package:bloc_playground/bloc/photos_bloc/photos_event.dart';
+import 'package:bloc_playground/bloc/photos_bloc/photos_state.dart';
 import 'package:bloc_playground/models/photos_response.dart';
 import 'package:bloc_playground/services/api_services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
