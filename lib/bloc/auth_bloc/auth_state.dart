@@ -41,3 +41,12 @@ class AuthFailedState extends AuthState {
   @override
   List<Object?> get props => [error];
 }
+
+class OtpSent extends AuthState {
+  final String otp;
+  OtpSent({required this.otp});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => throw UnimplementedError();
+}

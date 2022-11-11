@@ -8,12 +8,12 @@ import 'package:dio/dio.dart';
 
 class AuthServices {
   /// PUT call to get otp
-  Future<GetOtpResponse> getOtp(String number) async {
+  static Future<GetOtpResponse> getOtp(String phoneNumber) async {
     try {
       var dio = Dio();
       var response = await dio.put(
         '${AppConstants.fragUrl}customers/sendotp',
-        data: {"phone": number, "veriType": 'phone'},
+        data: {"phone": phoneNumber, "veriType": 'phone'},
       );
       return GetOtpResponse.fromJson(response.data);
     } catch (err) {
@@ -22,7 +22,8 @@ class AuthServices {
   }
 
   ///  POST call to login and get the token
-  Future<LoginResponse> loginWithMobile(String number, String otp) async {
+  static Future<LoginResponse> loginWithMobile(
+      String number, String otp) async {
     try {
       var dio = Dio();
       var response = await dio.post("${AppConstants.fragUrl}customer-login",
@@ -38,7 +39,7 @@ class AuthServices {
   /// Verification call
   /// may not be used
 
-  Future<OtpDataResponse> phoneVerification(String number) async {
+  static Future<OtpDataResponse> phoneVerification(String number) async {
     try {
       var dio = Dio();
       var response = await dio.put(

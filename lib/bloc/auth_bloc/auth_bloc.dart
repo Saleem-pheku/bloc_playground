@@ -2,25 +2,44 @@ import 'package:bloc_playground/bloc/auth_bloc/auth_event.dart';
 import 'package:bloc_playground/bloc/auth_bloc/auth_state.dart';
 import 'package:bloc_playground/models/auth/login_response.dart';
 import 'package:bloc_playground/services/auth/auth_services.dart';
+import 'package:bloc_playground/utils/auth_utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart';
 
-class LoginBloc extends Bloc<AuthEvent, AuthState> {
-  final AuthServices authServices;
-  LoginBloc({required this.authServices}) : super(AuthorizingState()) {
+class AuthBloc extends Bloc<AuthEvent, AuthState> {
+  AuthBloc() : super(AuthorizingState()) {
     on<AppStartedEvent>(checkAuth);
     on<LoginAttemptEvent>(getOtp);
     on<LogInEvent>(verifyOtp);
   }
-
-  Future<void> checkAuth(
-      AppStartedEvent event, Emitter<AuthState> emit) async {}
+  //final AuthServices authServices;
+  Future<void> checkAuth(AppStartedEvent event, Emitter<AuthState> emit) async {
+    String? isLogIn = await AuthUtils.getToken();
+    if (isLogIn != null && isLogIn.isNotEmpty) {
+      emit(
+        AuthenticatedState(),
+      );
+    } else {
+      emit(
+        UnAuthenticatedState(),
+      );
+    }
+  }
 
   Future<void> getOtp(LoginAttemptEvent event, Emitter<AuthState> emit) async {
     emit(AuthorizingState());
     try {
-      await authServices.getOtp(event.phoneNumber);
-      emit(AuthorizingState());
+      var response = await AuthServices.getOtp(event.phoneNumber);
+      //emit(AuthorizingState());
+      if (response.success) {
+        emit(
+          OtpSent(otp: response.data!),
+        );
+      } else {
+        emit(
+          UnAuthenticatedState(),
+        );
+      }
     } catch (e) {
       emit(AuthFailedState(e.toString()));
     }
@@ -28,11 +47,23 @@ class LoginBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> verifyOtp(LogInEvent event, Emitter<AuthState> emit) async {
     emit(AuthorizingState());
+    late bool isLoggedIn;
     try {
-      await authServices.loginWithMobile(event.phoneNumber, event.otp);
-      emit(AuthenticatedState());
+      var response =
+          await AuthServices.loginWithMobile(event.phoneNumber, event.otp);
+      if (response.isSuccess) {
+        isLoggedIn = await AuthUtils.saveToken(response.data!);
+      }
+      if (isLoggedIn) {
+        emit(AuthenticatedState());
+      }
     } catch (e) {
       emit(AuthFailedState(e.toString()));
     }
+  }
+
+  Future<void> logout(LoggedOutEvent event, Emitter<AuthState> emit) async {
+    await AuthUtils.deleteToken();
+    emit(UnAuthenticatedState());
   }
 }
